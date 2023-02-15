@@ -2,6 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include <QtMqtt/QMqttClient>
+#include <QTime>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -9,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->MainPages->setCurrentIndex(0);
+    QTimer *timer = new QTimer(); // for starting the clock
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
+    timer->start(1000); // clock update frequency (1 update/s)
 
     m_client = new QMqttClient();
     m_client->setHostname("127.0.0.1"); // localhost
@@ -38,10 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
-    connect(m_client, &QMqttClient::disconnected, this, [this](){
-        // update the icon here
-        qDebug() << "disconnected\n";
-    });
+//    connect(this, &QMqttClient::disconnected, this, [this](){
+//        // update the icon here
+//        qDebug() << "disconnected\n";
+//    });
 
     // UI interaction signals/slots
     connect(ui->SetOutputButton, &QPushButton::clicked, this, &MainWindow::goToSetCurrentVoltagePage);
@@ -49,6 +54,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->SaveButton, &QPushButton::clicked, this, &MainWindow::saveSetCurrentVoltage);
 
     m_client->connectToHost();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
 }
 
 void MainWindow::goToSetCurrentVoltagePage()
@@ -78,7 +88,8 @@ void MainWindow::setDCVoltageLabel(double voltageValue)
     ui->DCVoltageLabel->setText(QString("DC Voltage: %1V").arg(voltageValue, 0, 'f', 1));
 }
 
-MainWindow::~MainWindow()
+void MainWindow::updateTime()
 {
-    delete ui;
+    QTime time = QTime::currentTime();
+    ui->TimeLabel->setText(time.toString("h:mmAP"));
 }

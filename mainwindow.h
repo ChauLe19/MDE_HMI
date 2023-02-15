@@ -20,6 +20,7 @@ public slots:
     void goToSetCurrentVoltagePage();
     void cancelSetCurrentVoltage();
     void saveSetCurrentVoltage();
+    void updateTime();
 
 private:
     void setDCCurrentLabel(double currentValue);
