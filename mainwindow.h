@@ -25,7 +25,10 @@ public slots:
 private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);
+    void updateSetOutputStatus();
     Ui::MainWindow *ui;
     QMqttClient *m_client;
+    int setOutputVoltage;
+    int setOutputCurrent;
 };
 #endif // MAINWINDOW_H

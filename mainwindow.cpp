@@ -14,6 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     QTimer *timer = new QTimer(); // for starting the clock
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     timer->start(1000); // clock update frequency (1 update/s)
+    setOutputCurrent = ui->currentSpinBox->text().toInt();
+    setOutputVoltage = ui->voltageSpinBox->text().toInt();
+    updateSetOutputStatus();
 
     m_client = new QMqttClient();
     m_client->setHostname("127.0.0.1"); // localhost
@@ -68,13 +71,21 @@ void MainWindow::goToSetCurrentVoltagePage()
 
 void MainWindow::cancelSetCurrentVoltage()
 {
+    updateSetOutputStatus();
     ui->MainPages->setCurrentIndex(0);
+    ui->currentSpinBox->setValue(setOutputCurrent);
+    ui->voltageSpinBox->setValue(setOutputVoltage);
 }
 
 void MainWindow::saveSetCurrentVoltage()
 {
     // set(save) values
     // send mqtt messages
+    setOutputCurrent = ui->currentSpinBox->text().toInt();
+    setOutputVoltage = ui->voltageSpinBox->text().toInt();
+    m_client->publish(QMqttTopicName("/pebb/setVoltage"), QString::number(setOutputVoltage).toUtf8());
+    m_client->publish(QMqttTopicName("/pebb/setCurrent"), QString::number(setOutputCurrent).toUtf8());
+    updateSetOutputStatus();
     ui->MainPages->setCurrentIndex(0);
 }
 
@@ -92,4 +103,10 @@ void MainWindow::updateTime()
 {
     QTime time = QTime::currentTime();
     ui->TimeLabel->setText(time.toString("h:mmAP"));
+}
+
+void MainWindow::updateSetOutputStatus()
+{
+    qDebug() << "update";
+    ui->outputStatusLabel->setText(QString("Set DC Current: %1A\nSet DC Voltage: %2V").arg(QString::number(setOutputCurrent), QString::number(setOutputVoltage)));
 }
