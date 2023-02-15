@@ -8,7 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_client = new QMqttClient(	);
+    ui->MainPages->setCurrentIndex(0);
+
+    m_client = new QMqttClient();
     m_client->setHostname("127.0.0.1"); // localhost
     m_client->setPort(1883);
 //    m_client->setHostname("137.184.70.171"); // test mde signal
@@ -36,7 +38,34 @@ MainWindow::MainWindow(QWidget *parent)
         }
     });
 
+    connect(m_client, &QMqttClient::disconnected, this, [this](){
+        // update the icon here
+        qDebug() << "disconnected\n";
+    });
+
+    // UI interaction signals/slots
+    connect(ui->SetOutputButton, &QPushButton::clicked, this, &MainWindow::goToSetCurrentVoltagePage);
+    connect(ui->CancelButton, &QPushButton::clicked, this, &MainWindow::cancelSetCurrentVoltage);
+    connect(ui->SaveButton, &QPushButton::clicked, this, &MainWindow::saveSetCurrentVoltage);
+
     m_client->connectToHost();
+}
+
+void MainWindow::goToSetCurrentVoltagePage()
+{
+    ui->MainPages->setCurrentIndex(1);
+}
+
+void MainWindow::cancelSetCurrentVoltage()
+{
+    ui->MainPages->setCurrentIndex(0);
+}
+
+void MainWindow::saveSetCurrentVoltage()
+{
+    // set(save) values
+    // send mqtt messages
+    ui->MainPages->setCurrentIndex(0);
 }
 
 void MainWindow::setDCCurrentLabel(double currentValue)
@@ -53,4 +82,3 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-

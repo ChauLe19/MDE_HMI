@@ -16,6 +16,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void goToSetCurrentVoltagePage();
+    void cancelSetCurrentVoltage();
+    void saveSetCurrentVoltage();
+
 private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);

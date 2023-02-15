@@ -52,7 +52,7 @@
      <number>2</number>
     </property>
     <item>
-     <widget class="QWidget" name="verticalWidget_2" native="true">
+     <widget class="QWidget" name="StatusBar" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -79,7 +79,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="PEBBIdLabel">
          <property name="text">
           <string>PEBB#1</string>
          </property>
@@ -89,7 +89,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGraphicsView" name="graphicsView">
+        <widget class="QGraphicsView" name="ConnectionSymbol">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -108,7 +108,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="BatteryPercentageLabel">
          <property name="maximumSize">
           <size>
            <width>30</width>
@@ -127,7 +127,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QGraphicsView" name="graphicsView_2">
+        <widget class="QGraphicsView" name="BatterySymbol">
          <property name="maximumSize">
           <size>
            <width>25</width>
@@ -140,7 +140,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_3">
+        <widget class="QLabel" name="TimeLabel">
          <property name="maximumSize">
           <size>
            <width>55</width>
@@ -174,14 +174,14 @@
         <number>9</number>
        </property>
        <item>
-        <widget class="QStackedWidget" name="stackedWidget">
+        <widget class="QStackedWidget" name="MainPages">
          <property name="font">
           <font>
            <pointsize>16</pointsize>
           </font>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -203,7 +203,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item alignment="Qt::AlignHCenter">
-                 <widget class="QPushButton" name="pushButton">
+                 <widget class="QPushButton" name="OffButton">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
@@ -396,7 +396,7 @@ QPushButton::pressed
                      </spacer>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_2">
+                     <widget class="QPushButton" name="SetOutputButton">
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -614,7 +614,7 @@ QPushButton::pressed
           </layout>
          </widget>
          <widget class="QWidget" name="page_2">
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="CancelButton">
            <property name="geometry">
             <rect>
              <x>160</x>
@@ -632,7 +632,7 @@ QPushButton::pressed
             <string>Cancel</string>
            </property>
           </widget>
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="SaveButton">
            <property name="geometry">
             <rect>
              <x>430</x>
