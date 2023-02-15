@@ -17,6 +17,8 @@ public:
     ~MainWindow();
 
 private:
+    void setDCCurrentLabel(double currentValue);
+    void setDCVoltageLabel(double voltageLabel);
     Ui::MainWindow *ui;
     QMqttClient *m_client;
 };
