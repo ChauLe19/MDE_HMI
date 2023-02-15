@@ -29,7 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic){
         qDebug() << "hi";
-        setDCVoltageLabel(message.toDouble());
+        if(topic.name() == "/pebb/voltage")
+            setDCVoltageLabel(message.toDouble());
+        else if(topic.name() == "/pebb/current")
+            setDCCurrentLabel(message.toDouble());
     });
 
     connect(m_client, &QMqttClient::disconnected, this, [this](){
@@ -44,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
         if (!subscription) {
             qDebug() << QLatin1String("Error:") << QLatin1String("Could not subscribe. Is there a valid connection?");
         }
+        m_client->subscribe(QString("/pebb/current"), 0);
     });
 
 //    connect(this, &QMqttClient::disconnected, this, [this](){
@@ -107,6 +111,5 @@ void MainWindow::updateTime()
 
 void MainWindow::updateSetOutputStatus()
 {
-    qDebug() << "update";
     ui->outputStatusLabel->setText(QString("Set DC Current: %1A\nSet DC Voltage: %2V").arg(QString::number(setOutputCurrent), QString::number(setOutputVoltage)));
 }
