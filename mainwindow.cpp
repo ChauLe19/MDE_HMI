@@ -4,12 +4,29 @@
 #include <QtMqtt/QMqttClient>
 #include <QTime>
 #include <QTimer>
+#include <QtQml/QQmlContext>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    bool openGLSupported = QQuickWindow::graphicsApi() == QSGRendererInterface::OpenGLRhi;
+    if (!openGLSupported) {
+        qWarning() << "OpenGL is not set as the graphics backend, so AbstractSeries.useOpenGL will not work.";
+        qWarning() << "Set QSG_RHI_BACKEND=opengl environment variable to force the OpenGL backend to be used.";
+    }
+    this->scopeView = new QQuickView();
+    this->dataSource = new DataSource(scopeView);
+    scopeView->rootContext()->setContextProperty("dataSource", dataSource);
+    scopeView->rootContext()->setContextProperty("openGLSupported", openGLSupported);
+//    m_engine->load(QUrl(QStringLiteral("qrc:/qml/ScopeView.qml")));
+//    QWindow *scopeWindow = qobject_cast<QWindow*>(m_engine->rootObjects().at(0));
+    QWidget *scopeContainer = QWidget::createWindowContainer(this->scopeView, this);
+    scopeView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
+
+    scopeView->setSource(QUrl("qrc:/styles/ScopeView.qml"));
+    ui->oscilloscopeLayout->addWidget(scopeContainer);
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
@@ -19,13 +36,13 @@ MainWindow::MainWindow(QWidget *parent)
     updateSetOutputStatus();
 
     m_client = new QMqttClient();
-    m_client->setHostname("127.0.0.1"); // localhost
-    m_client->setPort(1883);
-//    m_client->setHostname("137.184.70.171"); // test mde signal
+//    m_client->setHostname("127.0.0.1"); // localhost
 //    m_client->setPort(1883);
+    m_client->setHostname("137.184.70.171"); // test mde signal
+    m_client->setPort(1883);
 
-//    m_client->setUsername("mde_test");
-//    m_client->setPassword("mde_test");
+    m_client->setUsername("mde_test");
+    m_client->setPassword("mde_test");
 
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic){
         qDebug() << "hi";

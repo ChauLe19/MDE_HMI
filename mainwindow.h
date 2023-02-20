@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QMqttClient>
+#include <QQmlApplicationEngine>
+#include <QQuickView>
+#include "datasource.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -30,5 +33,7 @@ private:
     QMqttClient *m_client;
     int setOutputVoltage;
     int setOutputCurrent;
+    QQuickView *scopeView;
+    DataSource *dataSource;
 };
 #endif // MAINWINDOW_H

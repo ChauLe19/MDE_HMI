@@ -8,5 +8,6 @@
     <qresource prefix="/styles">
         <file>SpyBot.qss</file>
         <file>DatePicker.qml</file>
+        <file>ScopeView.qml</file>
     </qresource>
 </RCC>
