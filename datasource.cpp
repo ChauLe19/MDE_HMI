@@ -43,7 +43,7 @@ void DataSource::update(QAbstractSeries *series)
 void DataSource::generateData(int type, int rowCount, int colCount)
 {
     // Remove previous data
-    m_data.clear();
+//    m_data.clear();
 
     // Append the new data depending on the type
     for (int i(0); i < rowCount; i++) {
@@ -55,7 +55,7 @@ void DataSource::generateData(int type, int rowCount, int colCount)
             switch (type) {
             case 0:
                 // data with sin + random component
-                y = qSin(M_PI / 50 * j) + 0.5 + QRandomGenerator::global()->generateDouble();
+                y = 100*(qSin(M_PI / 50 * j) + QRandomGenerator::global()->generateDouble() - 0.5);
                 x = j;
                 break;
             case 1:
@@ -72,3 +72,11 @@ void DataSource::generateData(int type, int rowCount, int colCount)
         m_data.append(points);
     }
 }
+
+//void DataSource::addVoltage(int voltageValue)
+//{
+//    static final int colCou
+//    static int counter = 0;
+//    counter++;
+
+//}

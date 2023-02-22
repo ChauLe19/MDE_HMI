@@ -47,7 +47,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic){
         qDebug() << "hi";
         if(topic.name() == "/pebb/voltage")
+        {
             setDCVoltageLabel(message.toDouble());
+//            mm
+        }
         else if(topic.name() == "/pebb/current")
             setDCCurrentLabel(message.toDouble());
     });

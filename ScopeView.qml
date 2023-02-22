@@ -38,22 +38,22 @@ ChartView {
 
     ValueAxis {
         id: axisY1
-        min: -1
-        max: 4
+        min: -200
+        max: 200
         labelsColor: "white"
     }
 
     ValueAxis {
         id: axisY2
-        min: -10
-        max: 5
+        min: -200
+        max: 200
         labelsColor: "white"
     }
 
     ValueAxis {
         id: axisX
         min: 0
-        max: 1024
+        max: 100
         labelsColor: "white"
     }
 
@@ -63,6 +63,8 @@ ChartView {
         axisX: axisX
         axisY: axisY1
         useOpenGL: chartView.openGL
+        color: "orange"
+        width: 3
     }
     LineSeries {
         id: lineSeries2
@@ -70,6 +72,8 @@ ChartView {
         axisX: axisX
         axisYRight: axisY2
         useOpenGL: chartView.openGL
+        color: "green"
+        width: 3
     }
 //![1]
 
