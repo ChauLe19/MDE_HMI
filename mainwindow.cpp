@@ -45,11 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_client->setPassword("mde_test");
 
     connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic){
-        qDebug() << "hi";
         if(topic.name() == "/pebb/voltage")
         {
             setDCVoltageLabel(message.toDouble());
-//            mm
+            this->dataSource->addVoltage(message.toDouble());
         }
         else if(topic.name() == "/pebb/current")
             setDCCurrentLabel(message.toDouble());

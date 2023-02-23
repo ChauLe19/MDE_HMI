@@ -18,11 +18,12 @@ class DataSource : public QObject
     Q_OBJECT
 public:
     explicit DataSource(QQuickView *appViewer, QObject *parent = 0);
+    void addVoltage(double voltageValue);;
 
 Q_SIGNALS:
 
 public slots:
-    void generateData(int type, int rowCount, int colCount);
+//    void generateData(int type, int rowCount, int colCount);
     void update(QAbstractSeries *series);
 
 private:

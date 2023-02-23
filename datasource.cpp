@@ -23,60 +23,34 @@ DataSource::DataSource(QQuickView *appViewer, QObject *parent) :
     qRegisterMetaType<QAbstractSeries*>();
     qRegisterMetaType<QAbstractAxis*>();
 
-    generateData(0, 5, 1024);
+    //  add the first point to prevent crashing
+    QList<QPointF> initpoints;
+    initpoints.reserve(0);
+    initpoints.append(QPointF(0, 0));
+    m_data.append(initpoints);
 }
 
 void DataSource::update(QAbstractSeries *series)
 {
     if (series) {
         QXYSeries *xySeries = static_cast<QXYSeries *>(series);
-        m_index++;
-        if (m_index > m_data.count() - 1)
-            m_index = 0;
 
-        QList<QPointF> points = m_data.at(m_index);
+        QList<QPointF> points = m_data.at(0);
         // Use replace instead of clear + append, it's optimized for performance
         xySeries->replace(points);
     }
 }
 
-void DataSource::generateData(int type, int rowCount, int colCount)
+
+void DataSource::addVoltage(double voltageValue)
 {
-    // Remove previous data
-//    m_data.clear();
+    static const int xMax = 100;
+    static int x = -1;
+    static QList<QPointF> points;
+    points.reserve(xMax);
+    x++;
 
-    // Append the new data depending on the type
-    for (int i(0); i < rowCount; i++) {
-        QList<QPointF> points;
-        points.reserve(colCount);
-        for (int j(0); j < colCount; j++) {
-            qreal x(0);
-            qreal y(0);
-            switch (type) {
-            case 0:
-                // data with sin + random component
-                y = 100*(qSin(M_PI / 50 * j) + QRandomGenerator::global()->generateDouble() - 0.5);
-                x = j;
-                break;
-            case 1:
-                // linear data
-                x = j;
-                y = (qreal) i / 10;
-                break;
-            default:
-                // unknown, do nothing
-                break;
-            }
-            points.append(QPointF(x, y));
-        }
-        m_data.append(points);
-    }
+    points.append(QPointF(x, voltageValue));
+    m_data.clear();
+    m_data.append(points);
 }
-
-//void DataSource::addVoltage(int voltageValue)
-//{
-//    static final int colCou
-//    static int counter = 0;
-//    counter++;
-
-//}
