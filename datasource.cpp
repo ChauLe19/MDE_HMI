@@ -54,3 +54,8 @@ void DataSource::addVoltage(double voltageValue)
     m_data.clear();
     m_data.append(points);
 }
+
+int DataSource::getLastXPos()
+{
+    return (*(m_data.at(0).end()-1)).toPoint().x();
+}

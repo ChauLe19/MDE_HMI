@@ -86,6 +86,8 @@ ChartView {
         onTriggered: {
             dataSource.update(chartView.series(0));
             dataSource.update(chartView.series(1));
+            axisX["max"] = Math.max(dataSource.getLastXPos(), 100);
+            axisX["min"] = Math.max(0, dataSource.getLastXPos() - 100);
         }
     }
     //![2]
