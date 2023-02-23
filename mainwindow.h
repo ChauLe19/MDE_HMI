@@ -24,6 +24,7 @@ public slots:
     void cancelSetCurrentVoltage();
     void saveSetCurrentVoltage();
     void updateTime();
+    void updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic);
 
 private:
     void setDCCurrentLabel(double currentValue);

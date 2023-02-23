@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // init components
     bool openGLSupported = QQuickWindow::graphicsApi() == QSGRendererInterface::OpenGLRhi;
     if (!openGLSupported) {
         qWarning() << "OpenGL is not set as the graphics backend, so AbstractSeries.useOpenGL will not work.";
@@ -20,15 +22,13 @@ MainWindow::MainWindow(QWidget *parent)
     this->dataSource = new DataSource(scopeView);
     scopeView->rootContext()->setContextProperty("dataSource", dataSource);
     scopeView->rootContext()->setContextProperty("openGLSupported", openGLSupported);
-//    m_engine->load(QUrl(QStringLiteral("qrc:/qml/ScopeView.qml")));
-//    QWindow *scopeWindow = qobject_cast<QWindow*>(m_engine->rootObjects().at(0));
     QWidget *scopeContainer = QWidget::createWindowContainer(this->scopeView, this);
     scopeView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
-
     scopeView->setSource(QUrl("qrc:/styles/ScopeView.qml"));
     ui->oscilloscopeLayout->addWidget(scopeContainer);
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
+
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     timer->start(1000); // clock update frequency (1 update/s)
     setOutputCurrent = ui->currentSpinBox->text().toInt();
@@ -36,23 +36,12 @@ MainWindow::MainWindow(QWidget *parent)
     updateSetOutputStatus();
 
     m_client = new QMqttClient();
-//    m_client->setHostname("127.0.0.1"); // localhost
-//    m_client->setPort(1883);
     m_client->setHostname("137.184.70.171"); // test mde signal
     m_client->setPort(1883);
-
     m_client->setUsername("mde_test");
     m_client->setPassword("mde_test");
 
-    connect(m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic){
-        if(topic.name() == "/pebb/voltage")
-        {
-            setDCVoltageLabel(message.toDouble());
-            this->dataSource->addVoltage(message.toDouble());
-        }
-        else if(topic.name() == "/pebb/current")
-            setDCCurrentLabel(message.toDouble());
-    });
+    connect(m_client, &QMqttClient::messageReceived, this, &MainWindow::updateOnMessageReceived);
 
     connect(m_client, &QMqttClient::disconnected, this, [this](){
         // update the icon here
@@ -68,11 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
         m_client->subscribe(QString("/pebb/current"), 0);
     });
-
-//    connect(this, &QMqttClient::disconnected, this, [this](){
-//        // update the icon here
-//        qDebug() << "disconnected\n";
-//    });
 
     // UI interaction signals/slots
     connect(ui->SetOutputButton, &QPushButton::clicked, this, &MainWindow::goToSetCurrentVoltagePage);
@@ -131,4 +115,17 @@ void MainWindow::updateTime()
 void MainWindow::updateSetOutputStatus()
 {
     ui->outputStatusLabel->setText(QString("Set DC Current: %1A\nSet DC Voltage: %2V").arg(QString::number(setOutputCurrent), QString::number(setOutputVoltage)));
+}
+
+void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic)
+{
+    if(topic.name() == "/pebb/voltage")
+    {
+        setDCVoltageLabel(message.toDouble());
+        this->dataSource->addVoltage(message.toDouble());
+    }
+    else if(topic.name() == "/pebb/current")
+    {
+        setDCCurrentLabel(message.toDouble());
+    }
 }
