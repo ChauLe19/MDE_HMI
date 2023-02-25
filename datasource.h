@@ -19,6 +19,7 @@ class DataSource : public QObject
 public:
     explicit DataSource(QQuickView *appViewer, QObject *parent = 0);
     void addVoltage(double voltageValue);
+    void addCurrent(double currentValue);
 
 Q_SIGNALS:
 

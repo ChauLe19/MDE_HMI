@@ -123,6 +123,7 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
     {
         setDCVoltageLabel(message.toDouble());
         this->dataSource->addVoltage(message.toDouble());
+        this->dataSource->addCurrent(message.toDouble());
     }
     else if(topic.name() == "/pebb/current")
     {

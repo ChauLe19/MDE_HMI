@@ -18,11 +18,23 @@ ChartView {
         fill: parent
         margins: 0
     }
-    legend.visible: false
     backgroundRoundness: 0
     plotAreaColor: "transparent"
     backgroundColor: "transparent"
-    titleColor: "white"
+    titleColor: "red"
+
+
+    
+
+    legend {
+        visible: true
+        alignment: Qt.AlignBottom
+        labelColor: "white"
+        borderColor: "white"
+        font.bold: true
+        font.pixelSize: 14
+        markerShape: Legend.MarkerShapeFromSeries
+    }
 
     property bool openGL: openGLSupported
     onOpenGLChanged: {
@@ -37,43 +49,52 @@ ChartView {
     }
 
     ValueAxis {
+        titleText: "<font color='white'>Voltage (V)</font>" // not sure if there's a better way
         id: axisY1
         min: -200
         max: 200
         labelsColor: "white"
+        labelsFont.bold: true
+        titleFont.bold: true
+        visible: true
     }
 
     ValueAxis {
+        titleText: "<font color='white'>Current (A)</font>"
         id: axisY2
         min: -200
         max: 200
         labelsColor: "white"
+        labelsFont.bold: true
+        titleFont.bold: true
     }
 
     ValueAxis {
+        titleText: "<font color='white'>Index</font>"
         id: axisX
         min: 0
         max: 100
         labelsColor: "white"
+        labelsFont.bold: true
     }
 
     LineSeries {
         id: lineSeries1
-        name: "signal 1"
+        name: "AC Voltage"
         axisX: axisX
         axisY: axisY1
         useOpenGL: chartView.openGL
         color: "orange"
-        width: 3
+        width: 5
     }
     LineSeries {
         id: lineSeries2
-        name: "signal 2"
+        name: "AC Current"
         axisX: axisX
         axisYRight: axisY2
         useOpenGL: chartView.openGL
         color: "green"
-        width: 3
+        width: 5
     }
 //![1]
 

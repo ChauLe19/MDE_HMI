@@ -28,14 +28,18 @@ DataSource::DataSource(QQuickView *appViewer, QObject *parent) :
     initpoints.reserve(0);
     initpoints.append(QPointF(0, 0));
     m_data.append(initpoints);
+    m_data.append(initpoints);
 }
 
 void DataSource::update(QAbstractSeries *series)
 {
     if (series) {
         QXYSeries *xySeries = static_cast<QXYSeries *>(series);
+        m_index++;
+        if (m_index > m_data.count() - 1)
+            m_index = 0;
 
-        QList<QPointF> points = m_data.at(0);
+        QList<QPointF> points = m_data.at(m_index);
         // Use replace instead of clear + append, it's optimized for performance
         xySeries->replace(points);
     }
@@ -49,10 +53,19 @@ void DataSource::addVoltage(double voltageValue)
     static QList<QPointF> points;
     points.reserve(xMax);
     x++;
-
     points.append(QPointF(x, voltageValue));
-    m_data.clear();
-    m_data.append(points);
+    m_data.replace(0, points);
+}
+
+void DataSource::addCurrent(double currentValue)
+{
+    static const int xMax = 100;
+    static int x = -1;
+    static QList<QPointF> points;
+    points.reserve(xMax);
+    x++;
+    points.append(QPointF(x, currentValue/2)); // only foor testing
+    m_data.replace(1, points);
 }
 
 int DataSource::getLastXPos()
