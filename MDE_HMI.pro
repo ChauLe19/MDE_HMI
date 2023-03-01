@@ -28,12 +28,13 @@ FORMS += \
     mainwindow.ui
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
+qnx: target.path = /home/pi
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
     ScopeView.qml \
+    eglfs.json \
     main.qmodel
 
 RESOURCES += \

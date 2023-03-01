@@ -486,7 +486,7 @@ QPushButton::pressed
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="comboBox">
+                  <widget class="QComboBox" name="StateComboBox">
                    <property name="font">
                     <font>
                      <pointsize>12</pointsize>
@@ -523,7 +523,7 @@ QPushButton::pressed
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="comboBox_2">
+                  <widget class="QComboBox" name="FaultComboBox">
                    <property name="font">
                     <font>
                      <pointsize>12</pointsize>

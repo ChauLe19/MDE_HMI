@@ -55,14 +55,20 @@ MainWindow::MainWindow(QWidget *parent)
         if (!subscription) {
             qDebug() << QLatin1String("Error:") << QLatin1String("Could not subscribe. Is there a valid connection?");
         }
-        m_client->subscribe(QString("/pebb/current"), 0);
+        subscription = m_client->subscribe(QString("/pebb/current"), 0);
+        if (!subscription) {
+            qDebug() << QLatin1String("Error:") << QLatin1String("Could not subscribe. Is there a valid connection?");
+        }
+        m_client->subscribe(QString("/pebb/state"), 0);
+        m_client->subscribe(QString("/pebb/fault"), 0);
     });
 
     // UI interaction signals/slots
     connect(ui->SetOutputButton, &QPushButton::clicked, this, &MainWindow::goToSetCurrentVoltagePage);
     connect(ui->CancelButton, &QPushButton::clicked, this, &MainWindow::cancelSetCurrentVoltage);
     connect(ui->SaveButton, &QPushButton::clicked, this, &MainWindow::saveSetCurrentVoltage);
-
+    connect(ui->StateComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeState);
+    connect(ui->FaultComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeFault);
     m_client->connectToHost();
 }
 
@@ -117,16 +123,52 @@ void MainWindow::updateSetOutputStatus()
     ui->outputStatusLabel->setText(QString("Set DC Current: %1A\nSet DC Voltage: %2V").arg(QString::number(setOutputCurrent), QString::number(setOutputVoltage)));
 }
 
+void MainWindow::changeState(const QString &text)
+{
+    m_client->publish(QMqttTopicName("/pebb/state"), text.toUtf8());
+}
+
+void MainWindow::changeFault(const QString &text)
+{
+    m_client->publish(QMqttTopicName("/pebb/fault"), text.toUtf8());
+}
+
 void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic)
 {
-    if(topic.name() == "/pebb/voltage")
+    if(topic.name().compare("/pebb/voltage") == 0)
     {
+        qDebug() << "voltage";
         setDCVoltageLabel(message.toDouble());
         this->dataSource->addVoltage(message.toDouble());
         this->dataSource->addCurrent(message.toDouble());
     }
-    else if(topic.name() == "/pebb/current")
+    else if (topic.name().compare("/pebb/current") ==0)
     {
+        qDebug() << "current";
         setDCCurrentLabel(message.toDouble());
+        this->dataSource->addCurrent(message.toDouble());
+    }
+    else if (topic.name() == "/pebb/state")
+    {
+        qDebug() << "state";
+        if(message.toStdString().compare("ST_OFF") == 0)
+        {
+            ui->StateComboBox->setCurrentIndex(0);
+        }
+        else if (message.toStdString().compare("ST_ON") == 0)
+        {
+            ui->StateComboBox->setCurrentIndex(1);
+        }
+    }
+    else if (topic.name() == "/pebb/fault")
+    {
+        if(message.toStdString().compare("NO_FAULT") == 0)
+        {
+            ui->StateComboBox->setCurrentIndex(0);
+        }
+        else if (message.toStdString().compare("FAULT") == 0)
+        {
+            ui->FaultComboBox->setCurrentIndex(1);
+        }
     }
 }
