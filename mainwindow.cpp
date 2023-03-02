@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     // init components
+    // add graph into widgets gui
     bool openGLSupported = QQuickWindow::graphicsApi() == QSGRendererInterface::OpenGLRhi;
     if (!openGLSupported) {
         qWarning() << "OpenGL is not set as the graphics backend, so AbstractSeries.useOpenGL will not work.";
@@ -26,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     scopeView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
     scopeView->setSource(QUrl("qrc:/styles/ScopeView.qml"));
     ui->oscilloscopeLayout->addWidget(scopeContainer);
+
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
 
@@ -133,24 +135,26 @@ void MainWindow::changeFault(const QString &text)
     m_client->publish(QMqttTopicName("/pebb/fault"), text.toUtf8());
 }
 
+void MainWindow::turnOff()
+{
+    m_client->publish(QMqttTopicName("/pebb/power"), "off");
+}
+
 void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic)
 {
     if(topic.name().compare("/pebb/voltage") == 0)
     {
-        qDebug() << "voltage";
         setDCVoltageLabel(message.toDouble());
         this->dataSource->addVoltage(message.toDouble());
         this->dataSource->addCurrent(message.toDouble());
     }
     else if (topic.name().compare("/pebb/current") ==0)
     {
-        qDebug() << "current";
         setDCCurrentLabel(message.toDouble());
         this->dataSource->addCurrent(message.toDouble());
     }
     else if (topic.name() == "/pebb/state")
     {
-        qDebug() << "state";
         if(message.toStdString().compare("ST_OFF") == 0)
         {
             ui->StateComboBox->setCurrentIndex(0);

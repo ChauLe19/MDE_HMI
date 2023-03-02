@@ -27,6 +27,7 @@ public slots:
     void updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic);
     void changeFault(const QString &text);
     void changeState(const QString &text);
+    void turnOff();
 private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);
