@@ -61,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent)
         if (!subscription) {
             qDebug() << QLatin1String("Error:") << QLatin1String("Could not subscribe. Is there a valid connection?");
         }
+
+        // TODO: Ask communication team to send us power status of the PEBB (ON/OFF) when initializing connection
         m_client->subscribe(QString("/pebb/state"), 0);
         m_client->subscribe(QString("/pebb/fault"), 0);
     });
@@ -68,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     // UI interaction signals/slots
     connect(ui->SetOutputButton, &QPushButton::clicked, this, &MainWindow::goToSetCurrentVoltagePage);
     connect(ui->CancelButton, &QPushButton::clicked, this, &MainWindow::cancelSetCurrentVoltage);
+    connect(ui->OffButton, &QPushButton::clicked, this, &MainWindow::turnOnOff);
     connect(ui->SaveButton, &QPushButton::clicked, this, &MainWindow::saveSetCurrentVoltage);
     connect(ui->StateComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeState);
     connect(ui->FaultComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeFault);
@@ -125,6 +128,7 @@ void MainWindow::updateSetOutputStatus()
     ui->outputStatusLabel->setText(QString("Set DC Current: %1A\nSet DC Voltage: %2V").arg(QString::number(setOutputCurrent), QString::number(setOutputVoltage)));
 }
 
+// maybe we don't need this?
 void MainWindow::changeState(const QString &text)
 {
     m_client->publish(QMqttTopicName("/pebb/state"), text.toUtf8());
@@ -135,9 +139,19 @@ void MainWindow::changeFault(const QString &text)
     m_client->publish(QMqttTopicName("/pebb/fault"), text.toUtf8());
 }
 
-void MainWindow::turnOff()
+void MainWindow::turnOnOff()
 {
-    m_client->publish(QMqttTopicName("/pebb/power"), "off");
+    switch(ui->StateComboBox->currentIndex())
+    {
+        case 0: //ST_OFF
+            m_client->publish(QMqttTopicName("/pebb/power"), "on");
+            break;
+        case 1: //ST_ON
+            m_client->publish(QMqttTopicName("/pebb/power"), "off");
+            break;
+        default:
+            break;
+    }
 }
 
 void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttTopicName &topic)
@@ -146,7 +160,7 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
     {
         setDCVoltageLabel(message.toDouble());
         this->dataSource->addVoltage(message.toDouble());
-        this->dataSource->addCurrent(message.toDouble());
+//        this->dataSource->addCurrent(message.toDouble());
     }
     else if (topic.name().compare("/pebb/current") ==0)
     {

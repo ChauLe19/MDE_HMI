@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
     a.setStyleSheet(styleSheet);
 
     MainWindow w;
-    w.show();
+//    w.show();
+    w.showFullScreen();
     return a.exec();
 }

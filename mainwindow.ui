@@ -160,6 +160,11 @@
     </item>
     <item>
      <widget class="QWidget" name="verticalWidget" native="true">
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+       </font>
+      </property>
       <layout class="QVBoxLayout" name="WrapperLayout">
        <property name="spacing">
         <number>0</number>
@@ -215,14 +220,14 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>70</width>
-                    <height>70</height>
+                    <width>90</width>
+                    <height>90</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>70</width>
-                    <height>70</height>
+                    <width>90</width>
+                    <height>90</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -551,12 +556,16 @@ QPushButton::pressed
                    <height>350</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
                  <property name="autoFillBackground">
                   <bool>false</bool>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">border-color: rgb(85, 170, 127);
-background-color: rgb(0, 85, 255);</string>
+                  <string notr="true"/>
                  </property>
                  <layout class="QVBoxLayout" name="oscilloscopeLayout">
                   <property name="spacing">
