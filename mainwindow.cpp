@@ -145,9 +145,11 @@ void MainWindow::turnOnOff()
     {
         case 0: //ST_OFF
             m_client->publish(QMqttTopicName("/pebb/power"), "on");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: green; color: #a;}");
             break;
         case 1: //ST_ON
             m_client->publish(QMqttTopicName("/pebb/power"), "off");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: yellow; color: black;}");
             break;
         default:
             break;
@@ -182,11 +184,19 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
     {
         if(message.toStdString().compare("NO_FAULT") == 0)
         {
-            ui->StateComboBox->setCurrentIndex(0);
+            ui->FaultComboBox->setCurrentIndex(0);
+            ui->FaultComboBox->setStyleSheet("QComboBox#FaultComboBox{background-color: green;}");
         }
         else if (message.toStdString().compare("FAULT") == 0)
         {
             ui->FaultComboBox->setCurrentIndex(1);
+            ui->FaultComboBox->setStyleSheet("QComboBox#FaultComboBox{background-color: red;}");
         }
     }
 }
+
+void MainWindow::on_OffButton_clicked()
+{
+
+}
+

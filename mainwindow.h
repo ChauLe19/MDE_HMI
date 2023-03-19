@@ -28,6 +28,9 @@ public slots:
     void changeFault(const QString &text);
     void changeState(const QString &text);
     void turnOnOff();
+private slots:
+    void on_OffButton_clicked();
+
 private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);

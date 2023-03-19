@@ -230,6 +230,9 @@
                     <height>90</height>
                    </size>
                   </property>
+                  <property name="cursor">
+                   <cursorShape>PointingHandCursor</cursorShape>
+                  </property>
                   <property name="styleSheet">
                    <string notr="true">QPushButton {
 	image: url(:/pictures/off.png);
@@ -242,6 +245,9 @@ QPushButton::pressed
                   </property>
                   <property name="text">
                    <string/>
+                  </property>
+                  <property name="checkable">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -423,6 +429,9 @@ QPushButton::pressed
                         <bold>true</bold>
                        </font>
                       </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
@@ -476,6 +485,9 @@ QPushButton::pressed
                 <layout class="QHBoxLayout" name="horizontalLayout">
                  <item>
                   <widget class="QLabel" name="label_12">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="font">
                     <font>
                      <pointsize>12</pointsize>
@@ -492,12 +504,26 @@ QPushButton::pressed
                  </item>
                  <item>
                   <widget class="QComboBox" name="StateComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="font">
                     <font>
                      <pointsize>12</pointsize>
                      <strikeout>false</strikeout>
                      <stylestrategy>PreferDefault</stylestrategy>
                     </font>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QComboBox#StateComboBox::drop-down {
+    width: 0px;
+}
+
+QComboBox#StateComboBox::down-arrow {
+    width: 0px;
+    height: 0px;
+    image: none;
+}</string>
                    </property>
                    <item>
                     <property name="text">
@@ -529,10 +555,24 @@ QPushButton::pressed
                  </item>
                  <item>
                   <widget class="QComboBox" name="FaultComboBox">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
                    <property name="font">
                     <font>
                      <pointsize>12</pointsize>
                     </font>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QComboBox#FaultComboBox::drop-down {
+    width: 0px;
+}
+
+QComboBox#FaultComboBox::down-arrow {
+    width: 0px;
+    height: 0px;
+    image: none;
+}</string>
                    </property>
                    <item>
                     <property name="text">
