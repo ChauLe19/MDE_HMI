@@ -37,9 +37,11 @@ private:
     void updateSetOutputStatus();
     Ui::MainWindow *ui;
     QMqttClient *m_client;
-    int setOutputVoltage;
-    int setOutputCurrent;
+    int setOutputVoltage = 0;
+    int setOutputCurrent = 0;
     QQuickView *scopeView;
+    QQuickView *voltageTumblerView;
+    QQuickView *currentTumblerView;
     DataSource *dataSource;
 };
 #endif // MAINWINDOW_H

@@ -431,3 +431,33 @@ QComboBox
 {
     color: #c2c7d5;
 }
+
+
+/*----QSpinBox----*/
+QSpinBox
+{
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+QSpinBox::up-button
+{
+    subcontrol-position: center;
+    subcontrol-origin: margin;
+    height: 50px;
+    width: 50px;
+    top: -30px;
+    right: 0px;
+}
+
+QSpinBox::down-button
+{
+    height: 50px;
+    width: 50px;
+    subcontrol-position: center;
+    subcontrol-origin: margin;
+    bottom: -30px;
+    left: 0px;
+}

@@ -5,6 +5,8 @@
 #include <QTime>
 #include <QTimer>
 #include <QtQml/QQmlContext>
+#include <QQmlProperty>
+#include <QMetaObject>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -28,13 +30,25 @@ MainWindow::MainWindow(QWidget *parent)
     scopeView->setSource(QUrl("qrc:/styles/ScopeView.qml"));
     ui->oscilloscopeLayout->addWidget(scopeContainer);
 
+    this->voltageTumblerView = new QQuickView();
+    QWidget *voltageTumblerContainer = QWidget::createWindowContainer(this->voltageTumblerView, this);
+    this->voltageTumblerView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
+    this->voltageTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
+    ui->VoltageOutputTumbler->addWidget(voltageTumblerContainer);
+
+    this->currentTumblerView = new QQuickView();
+    QWidget *currentTumblerContainer = QWidget::createWindowContainer(this->currentTumblerView, this);
+    this->currentTumblerView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
+    this->currentTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
+    ui->CurrentOutputTumbler->addWidget(currentTumblerContainer);
+
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
 
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     timer->start(1000); // clock update frequency (1 update/s)
-    setOutputCurrent = ui->currentSpinBox->text().toInt();
-    setOutputVoltage = ui->voltageSpinBox->text().toInt();
+//    setOutputCurrent = ui->currentSpinBox->text().toInt();
+//    setOutputVoltage = ui->voltageSpinBox->text().toInt();
     updateSetOutputStatus();
 
     m_client = new QMqttClient();
@@ -91,16 +105,24 @@ void MainWindow::cancelSetCurrentVoltage()
 {
     updateSetOutputStatus();
     ui->MainPages->setCurrentIndex(0);
-    ui->currentSpinBox->setValue(setOutputCurrent);
-    ui->voltageSpinBox->setValue(setOutputVoltage);
+//    ui->currentSpinBox->setValue(setOutputCurrent);
+//    ui->voltageSpinBox->setValue(setOutputVoltage);
+
+    QVariant returnedValue;
+    QMetaObject::invokeMethod((QObject*) this->voltageTumblerView->rootObject(), "setValue",
+        Q_RETURN_ARG(QVariant, returnedValue),
+        Q_ARG(QVariant, setOutputVoltage));
+    QMetaObject::invokeMethod((QObject*) this->currentTumblerView->rootObject(), "setValue",
+        Q_RETURN_ARG(QVariant, returnedValue),
+        Q_ARG(QVariant, setOutputCurrent));
 }
 
 void MainWindow::saveSetCurrentVoltage()
 {
     // set(save) values
     // send mqtt messages
-    setOutputCurrent = ui->currentSpinBox->text().toInt();
-    setOutputVoltage = ui->voltageSpinBox->text().toInt();
+    setOutputCurrent = QQmlProperty::read((QObject*)this->currentTumblerView->rootObject(), "value").toInt();
+    setOutputVoltage = QQmlProperty::read((QObject*)this->voltageTumblerView->rootObject(), "value").toInt();
     m_client->publish(QMqttTopicName("/pebb/setVoltage"), QString::number(setOutputVoltage).toUtf8());
     m_client->publish(QMqttTopicName("/pebb/setCurrent"), QString::number(setOutputCurrent).toUtf8());
     updateSetOutputStatus();
@@ -145,7 +167,7 @@ void MainWindow::turnOnOff()
     {
         case 0: //ST_OFF
             m_client->publish(QMqttTopicName("/pebb/power"), "on");
-            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: green; color: #a;}");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: green; color: black;}");
             break;
         case 1: //ST_ON
             m_client->publish(QMqttTopicName("/pebb/power"), "off");
