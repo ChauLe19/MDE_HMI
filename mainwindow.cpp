@@ -7,6 +7,13 @@
 #include <QtQml/QQmlContext>
 #include <QQmlProperty>
 #include <QMetaObject>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <stdio.h>
+#include <fstream>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,22 +32,27 @@ MainWindow::MainWindow(QWidget *parent)
     this->dataSource = new DataSource(scopeView);
     scopeView->rootContext()->setContextProperty("dataSource", dataSource);
     scopeView->rootContext()->setContextProperty("openGLSupported", openGLSupported);
+
+    //oscilliscope
     QWidget *scopeContainer = QWidget::createWindowContainer(this->scopeView, this);
     scopeView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
     scopeView->setSource(QUrl("qrc:/styles/ScopeView.qml"));
     ui->oscilloscopeLayout->addWidget(scopeContainer);
 
+    //Voltage Control
     this->voltageTumblerView = new QQuickView();
     QWidget *voltageTumblerContainer = QWidget::createWindowContainer(this->voltageTumblerView, this);
     this->voltageTumblerView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
     this->voltageTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
     ui->VoltageOutputTumbler->addWidget(voltageTumblerContainer);
 
+    //Current Control
     this->currentTumblerView = new QQuickView();
     QWidget *currentTumblerContainer = QWidget::createWindowContainer(this->currentTumblerView, this);
     this->currentTumblerView->setColor(QColor("#2A2C3A")); // I can't make it transparent, so I set it to the same color
     this->currentTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
     ui->CurrentOutputTumbler->addWidget(currentTumblerContainer);
+
 
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
@@ -89,6 +101,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->StateComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeState);
     connect(ui->FaultComboBox, &QComboBox::currentTextChanged, this, &MainWindow::changeFault);
     m_client->connectToHost();
+
+    //battery
+    connect(ui->BatteryBar, &QProgressBar::valueChanged, this, &MainWindow::on_BatteryBar_valueChanged);
+    //ui->BatteryBar->setValue(deviceInfo->batteryLevel());
 }
 
 MainWindow::~MainWindow()
@@ -222,3 +238,18 @@ void MainWindow::on_OffButton_clicked()
 
 }
 
+
+void MainWindow::on_BatteryBar_valueChanged(int value)
+{
+
+}
+
+int getBatteryLifePercent() {
+
+    QFile bCap("/sys/class/power_supply/BAT0/capacity");
+
+    bCap.open(QIODevice::ReadOnly | QIODevice::Text);
+    int level = QString(bCap.readAll()).toInt();
+    bCap.close();
+    return level;
+}

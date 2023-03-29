@@ -31,6 +31,8 @@ public slots:
 private slots:
     void on_OffButton_clicked();
 
+    void on_BatteryBar_valueChanged(int value);
+
 private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);
