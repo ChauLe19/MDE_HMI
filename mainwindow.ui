@@ -232,13 +232,6 @@ QProgressBar::chunk {
                 </size>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_3">
-                <item>
-                 <widget class="QLabel" name="label_5">
-                  <property name="text">
-                   <string>TextLabel</string>
-                  </property>
-                 </widget>
-                </item>
                 <item alignment="Qt::AlignHCenter">
                  <widget class="QPushButton" name="OffButton">
                   <property name="sizePolicy">
