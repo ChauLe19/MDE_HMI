@@ -37,6 +37,7 @@ private:
     void setDCCurrentLabel(double currentValue);
     void setDCVoltageLabel(double voltageLabel);
     void updateSetOutputStatus();
+    void changeStateDropDownBGColor(QString backgroundColor);
     Ui::MainWindow *ui;
     QMqttClient *m_client;
     int setOutputVoltage = 0;

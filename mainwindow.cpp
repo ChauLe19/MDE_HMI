@@ -183,11 +183,12 @@ void MainWindow::turnOnOff()
     {
         case 0: //ST_OFF
             m_client->publish(QMqttTopicName("/pebb/power"), "on");
-            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: green; color: black;}");
+            ui->StateComboBox->setItemData(0,QColor(Qt::blue),Qt::BackgroundRole);
+            this->changeStateDropDownBGColor("green");
             break;
         case 1: //ST_ON
             m_client->publish(QMqttTopicName("/pebb/power"), "off");
-            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox{background-color: yellow; color: black;}");
+            this->changeStateDropDownBGColor("yellow");
             break;
         default:
             break;
@@ -231,6 +232,12 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
             ui->FaultComboBox->setStyleSheet("QComboBox#FaultComboBox{background-color: red;}");
         }
     }
+}
+
+void MainWindow::changeStateDropDownBGColor(QString backgroundColor)
+{
+    QString templateSS = "QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:%1; color:black}";
+    ui->StateComboBox->setStyleSheet(templateSS.arg(backgroundColor));
 }
 
 void MainWindow::on_OffButton_clicked()

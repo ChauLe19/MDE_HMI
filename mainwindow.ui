@@ -211,7 +211,7 @@ QProgressBar::chunk {
           </font>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="page">
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -554,20 +554,13 @@ QPushButton::pressed
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QComboBox#StateComboBox::drop-down {
-    width: 0px;
+	border-width:0px;
+	image: none;
 }
 
 QComboBox#StateComboBox::down-arrow {
-    width: 0px;
-    height: 0px;
-    image: none;
-}
-QComboBox[currentIndex == 1]#StateComboBox{
-    background-color: yellow;
-}
-
-QComboBox[currentIndex == 0]#StateComboBox{
-    background-color: green;
+	border-width:0px;
+	image: none;
 }</string>
                    </property>
                    <item>
@@ -609,15 +602,12 @@ QComboBox[currentIndex == 0]#StateComboBox{
                     </font>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">QComboBox#FaultComboBox::drop-down {
-    width: 0px;
-}
+                    <string notr="true">
+                    QComboBox#FaultComboBox::drop-down {
+                            border-width: 0px;
+                        }
 
-QComboBox#FaultComboBox::down-arrow {
-    width: 0px;
-    height: 0px;
-    image: none;
-}</string>
+                </string>
                    </property>
                    <item>
                     <property name="text">
