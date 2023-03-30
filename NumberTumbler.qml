@@ -7,6 +7,7 @@ Rectangle {
     width: frame.implicitWidth
     height: frame.implicitHeight
     color: "#2A2C3A"
+    anchors.fill: parent
 
     property int value: frame.valueTumblerRow.valueTumbler100.currentIndex * 100 + frame.valueTumblerRow.valueTumbler10.currentIndex * 10 + frame.valueTumblerRow.valueTumbler1.currentIndex
 
@@ -28,7 +29,7 @@ Rectangle {
 
     FontMetrics {
         id: fontMetrics
-        font.pointSize: 14
+        font.pointSize: 24
     }
 
     Component {
@@ -47,7 +48,7 @@ Rectangle {
     Frame {
         id: frame
         implicitWidth: 240
-        implicitHeight: 200
+        implicitHeight: 220
         padding: 0
         anchors.centerIn: parent
         property alias valueTumblerRow: valueTumblerRow
