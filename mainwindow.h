@@ -31,7 +31,7 @@ public slots:
 private slots:
     void on_OffButton_clicked();
 
-    void on_BatteryBar_valueChanged(int value);
+    void BatteryBar_Update();
 
 private:
     void setDCCurrentLabel(double currentValue);

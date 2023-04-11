@@ -53,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->currentTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
     ui->CurrentOutputTumbler->addWidget(currentTumblerContainer);
 
-
     ui->MainPages->setCurrentIndex(0);
     QTimer *timer = new QTimer(); // for starting the clock
 
@@ -103,7 +102,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_client->connectToHost();
 
     //battery
-    connect(ui->BatteryBar, &QProgressBar::valueChanged, this, &MainWindow::on_BatteryBar_valueChanged);
+
+    ui->MainPages->setCurrentIndex(0);
+    QTimer *timer2 = new QTimer(); // for starting the clock
+    connect(timer2, &QTimer::timeout, this, &MainWindow::BatteryBar_Update);
+    timer2->start(1000); // clock update frequency (1 update/s)
     //ui->BatteryBar->setValue(deviceInfo->batteryLevel());
 }
 
@@ -184,11 +187,11 @@ void MainWindow::turnOnOff()
         case 0: //ST_OFF
             m_client->publish(QMqttTopicName("/pebb/power"), "on");
             ui->StateComboBox->setItemData(0,QColor(Qt::blue),Qt::BackgroundRole);
-            this->changeStateDropDownBGColor("green");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:green; color:#c2c7d5}");
             break;
         case 1: //ST_ON
             m_client->publish(QMqttTopicName("/pebb/power"), "off");
-            this->changeStateDropDownBGColor("yellow");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:yellow; color:#808080}");
             break;
         default:
             break;
@@ -236,7 +239,7 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
 
 void MainWindow::changeStateDropDownBGColor(QString backgroundColor)
 {
-    QString templateSS = "QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:%1; color:black}";
+    QString templateSS = "QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:%1; color:#c2c7d5}";
     ui->StateComboBox->setStyleSheet(templateSS.arg(backgroundColor));
 }
 
@@ -245,18 +248,39 @@ void MainWindow::on_OffButton_clicked()
 
 }
 
-
-void MainWindow::on_BatteryBar_valueChanged(int value)
+void MainWindow::BatteryBar_Update()
 {
-
-}
-
-int getBatteryLifePercent() {
-
     QFile bCap("/sys/class/power_supply/BAT0/capacity");
 
     bCap.open(QIODevice::ReadOnly | QIODevice::Text);
-    int level = QString(bCap.readAll()).toInt();
+    QString levelString = QString(bCap.readAll());
+    int level = levelString.toInt();
     bCap.close();
-    return level;
+
+    if(level > 50){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: #02AA20;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+    else if(level < 50 && level > 20){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: yellow;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+    else if(level < 20){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: red;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+
+    ui->BatteryBar->setValue(level);
 }

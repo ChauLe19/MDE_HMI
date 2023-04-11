@@ -64,7 +64,7 @@ void DataSource::addCurrent(double currentValue)
     static QList<QPointF> points;
     points.reserve(xMax);
     x++;
-    points.append(QPointF(x, currentValue/2)); // only foor testing
+    points.append(QPointF(x, currentValue/2)); // only for testing
     m_data.replace(1, points);
 }
 
