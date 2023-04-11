@@ -4,6 +4,7 @@
         <file>off.png</file>
         <file>connected.png</file>
         <file>battery.png</file>
+        <file>disconnected.png</file>
     </qresource>
     <qresource prefix="/styles">
         <file>SpyBot.qss</file>

@@ -8,6 +8,7 @@
 #include <QQmlProperty>
 #include <QMetaObject>
 #include <cstdlib>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -15,12 +16,14 @@
 #include <fstream>
 #include <QFile>
 
+
+bool connectedToMQTT = false;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     // init components
     // add graph into widgets gui
     bool openGLSupported = QQuickWindow::graphicsApi() == QSGRendererInterface::OpenGLRhi;
@@ -76,12 +79,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::disconnected, this, [this](){
         // update the icon here
+        connectedToMQTT = false;
         ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/disconnected.png) no-repeat");
         qDebug() << "disconnected\n";
+
+//        while (true) {
+//                if (try to reconnect) {
+//                    break;
+//                }
+//                std::sleep(1); // Wait for 5 seconds before attempting to reconnect
+//        }
+
     });
 
     connect(m_client, &QMqttClient::connected, this, [this](){
         // update the icon here
+        connectedToMQTT = true;
         ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/connected.png) no-repeat");
         qDebug() << "connected\n";
         auto subscription = m_client->subscribe(QString("/pebb/voltage"), 0);
