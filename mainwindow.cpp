@@ -54,14 +54,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->CurrentOutputTumbler->addWidget(currentTumblerContainer);
 
     ui->MainPages->setCurrentIndex(0);
-    QTimer *timer = new QTimer(); // for starting the clock
 
+    //start timer
+    QTimer *timer = new QTimer(); // for starting the clock
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     timer->start(1000); // clock update frequency (1 update/s)
+
 //    setOutputCurrent = ui->currentSpinBox->text().toInt();
 //    setOutputVoltage = ui->voltageSpinBox->text().toInt();
     updateSetOutputStatus();
 
+
+    //connect to mqtt
     m_client = new QMqttClient();
     m_client->setHostname("137.184.70.171"); // test mde signal
     m_client->setPort(1883);
@@ -72,11 +76,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::disconnected, this, [this](){
         // update the icon here
+        ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/disconnected.png) no-repeat");
         qDebug() << "disconnected\n";
     });
 
     connect(m_client, &QMqttClient::connected, this, [this](){
         // update the icon here
+        ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/connected.png) no-repeat");
         qDebug() << "connected\n";
         auto subscription = m_client->subscribe(QString("/pebb/voltage"), 0);
         if (!subscription) {

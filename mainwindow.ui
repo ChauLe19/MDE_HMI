@@ -179,7 +179,8 @@ QProgressBar::chunk {
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">border-image: url(:/pictures/connected.png) no-repeat;</string>
+          <string notr="true">border-image: url(:/pictures/disconnected.png) no-repeat;
+</string>
          </property>
         </widget>
        </item>
@@ -608,12 +609,15 @@ QComboBox#StateComboBox::down-arrow {
                     </font>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">
-                    QComboBox#FaultComboBox::drop-down {
-                            border-width: 0px;
-                        }
+                    <string notr="true">QComboBox#FaultComboBox::drop-down {
+	border-width:0px;
+	image: none;
+}
 
-                </string>
+QComboBox#FaultComboBox::down-arrow {
+	border-width:0px;
+	image: none;
+}</string>
                    </property>
                    <item>
                     <property name="text">
