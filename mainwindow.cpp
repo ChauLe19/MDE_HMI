@@ -8,6 +8,7 @@
 #include <QQmlProperty>
 #include <QMetaObject>
 #include <cstdlib>
+#include <stdlib.h>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -15,12 +16,14 @@
 #include <fstream>
 #include <QFile>
 
+
+bool connectedToMQTT = false;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     // init components
     // add graph into widgets gui
     bool openGLSupported = QQuickWindow::graphicsApi() == QSGRendererInterface::OpenGLRhi;
@@ -53,16 +56,19 @@ MainWindow::MainWindow(QWidget *parent)
     this->currentTumblerView->setSource(QUrl("qrc:/styles/NumberTumbler.qml"));
     ui->CurrentOutputTumbler->addWidget(currentTumblerContainer);
 
-
     ui->MainPages->setCurrentIndex(0);
-    QTimer *timer = new QTimer(); // for starting the clock
 
+    //start timer
+    QTimer *timer = new QTimer(); // for starting the clock
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     timer->start(1000); // clock update frequency (1 update/s)
+
 //    setOutputCurrent = ui->currentSpinBox->text().toInt();
 //    setOutputVoltage = ui->voltageSpinBox->text().toInt();
     updateSetOutputStatus();
 
+
+    //connect to mqtt
     m_client = new QMqttClient();
     m_client->setHostname("137.184.70.171"); // test mde signal
     m_client->setPort(1883);
@@ -73,11 +79,23 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(m_client, &QMqttClient::disconnected, this, [this](){
         // update the icon here
+        connectedToMQTT = false;
+        ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/disconnected.png) no-repeat");
         qDebug() << "disconnected\n";
+
+//        while (true) {
+//                if (try to reconnect) {
+//                    break;
+//                }
+//                std::sleep(1); // Wait for 5 seconds before attempting to reconnect
+//        }
+
     });
 
     connect(m_client, &QMqttClient::connected, this, [this](){
         // update the icon here
+        connectedToMQTT = true;
+        ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/connected.png) no-repeat");
         qDebug() << "connected\n";
         auto subscription = m_client->subscribe(QString("/pebb/voltage"), 0);
         if (!subscription) {
@@ -103,7 +121,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_client->connectToHost();
 
     //battery
-    connect(ui->BatteryBar, &QProgressBar::valueChanged, this, &MainWindow::on_BatteryBar_valueChanged);
+
+    ui->MainPages->setCurrentIndex(0);
+    QTimer *timer2 = new QTimer(); // for starting the clock
+    connect(timer2, &QTimer::timeout, this, &MainWindow::BatteryBar_Update);
+    timer2->start(1000); // clock update frequency (1 update/s)
     //ui->BatteryBar->setValue(deviceInfo->batteryLevel());
 }
 
@@ -184,11 +206,11 @@ void MainWindow::turnOnOff()
         case 0: //ST_OFF
             m_client->publish(QMqttTopicName("/pebb/power"), "on");
             ui->StateComboBox->setItemData(0,QColor(Qt::blue),Qt::BackgroundRole);
-            this->changeStateDropDownBGColor("green");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:green; color:#c2c7d5}");
             break;
         case 1: //ST_ON
             m_client->publish(QMqttTopicName("/pebb/power"), "off");
-            this->changeStateDropDownBGColor("yellow");
+            ui->StateComboBox->setStyleSheet("QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:yellow; color:#808080}");
             break;
         default:
             break;
@@ -236,7 +258,7 @@ void MainWindow::updateOnMessageReceived(const QByteArray &message, const QMqttT
 
 void MainWindow::changeStateDropDownBGColor(QString backgroundColor)
 {
-    QString templateSS = "QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:%1; color:black}";
+    QString templateSS = "QComboBox#StateComboBox::drop-down {border-width:0px;}QComboBox#StateComboBox::down-arrow {border-width:0px;image: none;} QComboBox#StateComboBox{background-color:%1; color:#c2c7d5}";
     ui->StateComboBox->setStyleSheet(templateSS.arg(backgroundColor));
 }
 
@@ -245,18 +267,39 @@ void MainWindow::on_OffButton_clicked()
 
 }
 
-
-void MainWindow::on_BatteryBar_valueChanged(int value)
+void MainWindow::BatteryBar_Update()
 {
-
-}
-
-int getBatteryLifePercent() {
-
     QFile bCap("/sys/class/power_supply/BAT0/capacity");
 
     bCap.open(QIODevice::ReadOnly | QIODevice::Text);
-    int level = QString(bCap.readAll()).toInt();
+    QString levelString = QString(bCap.readAll());
+    int level = levelString.toInt();
     bCap.close();
-    return level;
+
+    if(level > 50){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: #02AA20;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+    else if(level < 50 && level > 20){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: yellow;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+    else if(level < 20){
+        ui->BatteryBar->setStyleSheet(QString::fromUtf8("QProgressBar#BatteryBar{color: black;}\n"
+            "\n"
+            "QProgressBar::chunk {\n"
+            "     background-color: red;\n"
+            "     width: 5px;\n"
+            " }"));
+    }
+
+    ui->BatteryBar->setValue(level);
 }
