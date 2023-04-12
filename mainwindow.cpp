@@ -147,12 +147,12 @@ void MainWindow::saveSetCurrentVoltage()
 
 void MainWindow::setDCCurrentLabel(double currentValue)
 {
-    ui->DCCurrentLabel->setText(QString("DC Current: %1A").arg(currentValue, 0, 'f', 1));
+    ui->DCCurrentLabel->setText(QString("DC Curr.: %1A").arg(currentValue, 0, 'f', 1));
 }
 
 void MainWindow::setDCVoltageLabel(double voltageValue)
 {
-    ui->DCVoltageLabel->setText(QString("DC Voltage: %1V").arg(voltageValue, 0, 'f', 1));
+    ui->DCVoltageLabel->setText(QString("DC Volt.: %1V").arg(voltageValue, 0, 'f', 1));
 }
 
 void MainWindow::updateTime()

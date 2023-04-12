@@ -323,7 +323,7 @@ QPushButton::pressed
                        </font>
                       </property>
                       <property name="text">
-                       <string>DC Current: 52.6A</string>
+                       <string>DC Curr.: 52.6A</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -394,7 +394,7 @@ QPushButton::pressed
                        </font>
                       </property>
                       <property name="text">
-                       <string>DC Voltage: 100.8V</string>
+                       <string>DC Volt.: 100.8V</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -462,7 +462,7 @@ QPushButton::pressed
                       </property>
                       <property name="font">
                        <font>
-                        <pointsize>24</pointsize>
+                        <pointsize>22</pointsize>
                         <bold>true</bold>
                        </font>
                       </property>
