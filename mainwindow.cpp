@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <QFile>
+#include <QtMath>
 
 
 bool connectedToMQTT = false;
@@ -161,8 +162,10 @@ void MainWindow::saveSetCurrentVoltage()
     // send mqtt messages
     setOutputCurrent = QQmlProperty::read((QObject*)this->currentTumblerView->rootObject(), "value").toInt();
     setOutputVoltage = QQmlProperty::read((QObject*)this->voltageTumblerView->rootObject(), "value").toInt();
-    m_client->publish(QMqttTopicName("/pebb/setVoltage"), QString::number(setOutputVoltage).toUtf8());
-    m_client->publish(QMqttTopicName("/pebb/setCurrent"), QString::number(setOutputCurrent).toUtf8());
+    int setOutputCurrentPeak = qSqrt(2) * setOutputCurrent;
+    int setOutputVoltagePeak = qSqrt(2) * setOutputVoltage;
+    m_client->publish(QMqttTopicName("/pebb/setVoltage"), QString::number(setOutputVoltagePeak).toUtf8());
+    m_client->publish(QMqttTopicName("/pebb/setCurrent"), QString::number(setOutputCurrentPeak).toUtf8());
     updateSetOutputStatus();
     ui->MainPages->setCurrentIndex(0);
 }
