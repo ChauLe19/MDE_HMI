@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect to mqtt
     m_client = new QMqttClient();
+    m_client->setKeepAlive(10000);
     m_client->setHostname("137.184.70.171"); // test mde signal
     m_client->setPort(1883);
     m_client->setUsername("mde_test");
@@ -83,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
         connectedToMQTT = false;
         ui->ConnectionSymbol->setStyleSheet("border-image: url(:/pictures/disconnected.png) no-repeat");
         qDebug() << "disconnected\n";
-
+        QTimer::singleShot(1000, this, [this](){this->m_client->connectToHost();});
 //        while (true) {
 //                if (try to reconnect) {
 //                    break;
@@ -123,10 +124,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //battery
 
-    ui->MainPages->setCurrentIndex(0);
-    QTimer *timer2 = new QTimer(); // for starting the clock
-    connect(timer2, &QTimer::timeout, this, &MainWindow::BatteryBar_Update);
-    timer2->start(1000); // clock update frequency (1 update/s)
+//    ui->MainPages->setCurrentIndex(0);
+//    QTimer *timer2 = new QTimer(); // for starting the clock
+//    connect(timer2, &QTimer::timeout, this, &MainWindow::BatteryBar_Update);
+//    timer2->start(1000); // clock update frequency (1 update/s)
     //ui->BatteryBar->setValue(deviceInfo->batteryLevel());
 }
 
